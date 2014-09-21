@@ -2,6 +2,7 @@ from boto.ec2 import EC2Connection
 import logging
 import subprocess
 import urllib2
+import multiprocessing
 from mako.template import Template
 
 __version__ = '0.4.1'
@@ -80,7 +81,9 @@ def generate_haproxy_config(template=None, instances=None):
     '''
     Generate an haproxy configuration based on the template and instances list.
     '''
-    return Template(filename=template).render(instances=instances)
+    cpu_count = multiprocessing.cpu_count()
+    cpu_list = range(1, cpu_count + 1)
+    return Template(filename=template).render(cpu_count=cpu_count, cpu_list=cpu_list, instances=instances)
 
 def restart_haproxy(args):
     '''
